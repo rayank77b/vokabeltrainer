@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Vokabeltrainer</title>
+</head>
+<body>
+  <h1>Vokabeltrainer</h1>
+  <label>Richtung:
+    <select id="table">
+      <option value="spanisch_deutsch_erster_versuch">Spanisch→Deutsch</option>
+      <option value="deutsch_spanisch_erster_versuch">Deutsch→Spanisch</option>
+    </select>
+  </label>
+  <button id="start">Start</button>
+
+  <div id="quiz" style="display:none;">
+    <p id="frage"></p>
+    <button id="wusste">Wusste es</button>
+    <button id="oje">Oje</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

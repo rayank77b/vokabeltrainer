@@ -1,0 +1,6 @@
+*.o
+src/*.o
+db/*.csv
+db/*.db
+*.vscode
+vokabeltrainer
