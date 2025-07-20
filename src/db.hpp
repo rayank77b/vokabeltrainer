@@ -18,6 +18,9 @@ public:
   // verschieben bei richtig/falsch
   void moveWord(const std::string& from, const std::string& to, int id);
   void deleteWord(const std::string& table, int id);
+
+  void createTable(const std::string& tablename);
+  void createDatabaseFromCSV(const std::string& csvPath);
   
 
 private:

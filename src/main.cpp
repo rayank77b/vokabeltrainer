@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) {
 
-    const std::string dbFile  = "db/vokabeln.db";
+    VokabelDB db("db/vokabeln.db");
 
     if (argc >1 && argc != 3) {
         std::cerr << "Usage: " << argv[0] << " -c dateiname.csv\n";
@@ -17,11 +17,9 @@ int main(int argc, char* argv[]) {
         return 1;
     } else if (argc == 3 && std::string(argv[1]) == "-c") {
         const std::string csvFile = argv[2];
-    
         try {
-            createDatabaseFromCSV(csvFile, dbFile);
-            std::cout << "Datenbank '" << dbFile
-                      << "' erfolgreich angelegt und befüllt.\n";
+            db.createDatabaseFromCSV(csvFile);
+            std::cout << "Datenbank 'db/vokabeln.db' erfolgreich angelegt und befüllt.\n";
             return 0;
         } catch (const std::exception& ex) {
             std::cerr << "Fehler: " << ex.what() << "\n";
@@ -30,8 +28,6 @@ int main(int argc, char* argv[]) {
     } 
 
     // starte den http server
-    VokabelDB db("db/vokabeln.db");
-
     runServer(db);
     return 0;
 }

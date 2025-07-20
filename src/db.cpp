@@ -1,6 +1,9 @@
 #include "db.hpp"
 #include <stdexcept>  // error handling
 #include <unordered_set>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 VokabelDB::VokabelDB(const std::string& path) {
   if (sqlite3_open(path.c_str(), &db_) != SQLITE_OK)
@@ -19,6 +22,85 @@ bool VokabelDB::isValidTable(const std::string& table) {
         "deutsch_spanisch_zweiter_versuch"
     };
     return validTables.find(table) != validTables.end();
+}
+
+// Tabelle anlegen, falls nicht vorhanden
+void VokabelDB::createTable(const std::string& tablename) { 
+    try {
+        if(!isValidTable(tablename)) 
+            throw("Fehler nicht valide table name");
+        std::string createTableSQL =
+            "CREATE TABLE IF NOT EXISTS " + tablename + " ("
+            "  id   INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "  span TEXT    NOT NULL,"
+            "  deut TEXT    NOT NULL);";
+    
+        exec(createTableSQL);
+    } catch (...) {
+        throw std::runtime_error("Fehler beim Anlegen der Tabelle");
+    }
+}
+
+
+void VokabelDB::createDatabaseFromCSV(const std::string& csvPath) {
+
+    createTable("spanisch_deutsch_erster_versuch");
+    createTable("spanisch_deutsch_zweiter_versuch");
+    createTable("deutsch_spanisch_erster_versuch");
+    createTable("deutsch_spanisch_zweiter_versuch");
+
+    char* err = nullptr;
+    // Transaktion starten
+    if (sqlite3_exec(db_, "BEGIN TRANSACTION;", nullptr, nullptr, &err) != SQLITE_OK) {
+        std::string msg = err; 
+        sqlite3_free(err);
+        throw std::runtime_error("Konnte Transaktion nicht starten: " + msg);
+    }
+
+    // Prepared Statement für INSERT
+    const char* insertSQL =
+        "INSERT INTO spanisch_deutsch_erster_versuch (span, deut) VALUES (?, ?);";
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db_, insertSQL, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Konnte INSERT-Statement nicht erstellen");
+    }
+
+    // CSV einlesen
+    std::ifstream file(csvPath);
+    if (!file.is_open()) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Konnte CSV-Datei nicht öffnen: " + csvPath);
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        std::stringstream ss(line);
+        std::string span, deut;
+        if (!std::getline(ss, span, ';') || !std::getline(ss, deut))
+            continue; // ungültige Zeile überspringen
+
+        // Werte binden
+        sqlite3_bind_text(stmt, 1, span.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, deut.c_str(), -1, SQLITE_TRANSIENT);
+
+        // ausführen
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            std::cerr << "Warnung: Insert fehlgeschlagen für '"
+                      << span << ";" << deut << "': "
+                      << sqlite3_errmsg(db_) << "\n";
+        }
+
+        // Statement zurücksetzen für nächsten Durchlauf
+        sqlite3_reset(stmt);
+    }
+
+    // Statement und Transaktion abschließen
+    sqlite3_finalize(stmt);
+    if (sqlite3_exec(db_, "COMMIT;", nullptr, nullptr, &err) != SQLITE_OK) {
+        std::string msg = err; sqlite3_free(err);
+        throw std::runtime_error("Konnte Transaktion nicht abschließen: " + msg);
+    }
 }
 
 int VokabelDB::count(const std::string& table) {
