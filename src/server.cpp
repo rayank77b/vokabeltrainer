@@ -68,9 +68,16 @@ void runServer(VokabelDB& db) {
 
         // Bestimme Ziel-Tabelle
         std::string nextTable;
-        if (table.find("erster") != std::string::npos) {
-            nextTable = table.substr(0, table.find("erster")) + "zweiter_versuch";
-        }
+
+        if (table == "spanisch_deutsch_erster_versuch") 
+            nextTable = "spanisch_deutsch_zweiter_versuch";
+        else if (table == "spanisch_deutsch_zweiter_versuch" ) 
+            nextTable = "deutsch_spanisch_erster_versuch";
+        else if (table == "deutsch_spanisch_erster_versuch" ) 
+            nextTable = "deutsch_spanisch_zweiter_versuch";
+        else if (table == "deutsch_spanisch_zweiter_versuch" ) 
+            nextTable = "";
+
         // Move oder delete
         if (correct) {
             if (!nextTable.empty())

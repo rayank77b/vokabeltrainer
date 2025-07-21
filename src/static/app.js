@@ -7,6 +7,7 @@ document.getElementById('start').onclick = async () => {
   if (count==0) return alert('Keine Vokabeln mehr in dieser Richtung!');
   document.getElementById('quiz').style.display='block';
   nextWord(table);
+  restartAnswerAnimation();  //Animation neu triggern
 };
 
 async function nextWord(table) {
