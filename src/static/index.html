@@ -1,21 +1,64 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" >
   <title>Vokabeltrainer</title>
+  <style>
+    #frage {
+      font-size: 4em;     /* 1em = aktuelle Schriftgröße, 4em = 4× so groß */
+      font-weight: bold;  /* optional: Fettformatierung */
+      line-height: 1.1;
+    }
+     /* Standard-Zustand: weißer Text, schwarzer Rahmen */
+    #antwort {
+      font-size: 4em;     /* 1em = aktuelle Schriftgröße, 4em = 4× so groß */
+      font-weight: bold;  /* optional: Fettformatierung */
+      line-height: 1.1;
+      color:white;
+      border: 1px solid black;
+      padding: 0.5em;       /* nur optional für etwas Innenabstand */
+      display: inline-block;/* damit die Box nur so groß wie der Inhalt ist */
+    }
+    /* Die Animation nur in der Klasse: */
+    .to-black {
+      animation: toBlack 0.3s ease 1s forwards;
+    }
+     /* Keyframes: von aktuellem Zustand in den Zielzustand */
+    @keyframes toBlack {
+      to { color: black; }
+    }
+    button {
+      font-size: 1.5rem;       /* Schrift 1.5× so groß wie Root-Font */
+      padding: 0.75em 1.5em;   /* Oben/unten 0.75em, links/rechts 1.5em */
+      min-width: 120px;        /* minimale Breite */
+      min-height: 50px;        /* minimale Höhe */
+      cursor: pointer;         /* schönerer Mauszeiger */
+    }
+    select {
+      font-size: 1.5rem;       /* Schrift 1.5× so groß wie Root-Font */
+      padding: 0.75em 1.5em;   /* Oben/unten 0.75em, links/rechts 1.5em */
+      min-width: 120px;        /* minimale Breite */
+      min-height: 50px;        /* minimale Höhe */
+      cursor: pointer;         /* schönerer Mauszeiger */
+    }
+  </style>
 </head>
 <body>
   <h1>Vokabeltrainer</h1>
   <label>Richtung:
     <select id="table">
-      <option value="spanisch_deutsch_erster_versuch">Spanisch→Deutsch</option>
-      <option value="deutsch_spanisch_erster_versuch">Deutsch→Spanisch</option>
+      <option value="spanisch_deutsch_erster_versuch">Spanisch→Deutsch 1te</option>
+      <option value="spanisch_deutsch_zweiter_versuch">Spanisch→Deutsch 2te</option>
+      <option value="deutsch_spanisch_erster_versuch">Deutsch→Spanisch 1te</option>
+      <option value="deutsch_spanisch_zweiter_versuch">Deutsch→Spanisch 2te</option>
     </select>
   </label>
   <button id="start">Start</button>
 
   <div id="quiz" style="display:none;">
     <p id="frage"></p>
+    <p id="antwort" class="to-black"></p>
+    <br>
     <button id="wusste">Wusste es</button>
     <button id="oje">Oje</button>
   </div>

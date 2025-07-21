@@ -84,6 +84,8 @@ void VokabelDB::createDatabaseFromCSV(const std::string& csvPath) {
         sqlite3_bind_text(stmt, 1, span.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 2, deut.c_str(), -1, SQLITE_TRANSIENT);
 
+        std::cout<<span.c_str()<<" :  "<<deut.c_str()<<"\n";
+
         // ausführen
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             std::cerr << "Warnung: Insert fehlgeschlagen für '"

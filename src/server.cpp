@@ -18,7 +18,7 @@ void runServer(VokabelDB& db) {
         Json::StreamWriterBuilder wbuilder;
         std::string out = Json::writeString(wbuilder, root);
 
-        res.set_content(out, "application/json");
+        res.set_content(out, "application/json; charset=utf-8");
     });
 
     // --- Next-Word-Endpoint ---
@@ -28,20 +28,22 @@ void runServer(VokabelDB& db) {
             auto tup = db.next(table);
             int id       = std::get<0>(tup);
             const auto& frage = std::get<1>(tup);
+            const auto& antwort = std::get<2>(tup);
             // Build JSON
             Json::Value root;
             root["id"]    = id;
             root["frage"] = frage;
+            root["antwort"] = antwort;
             Json::StreamWriterBuilder wbuilder;
             std::string out = Json::writeString(wbuilder, root);
 
-            res.set_content(out, "application/json");
+            res.set_content(out, "application/json; charset=utf-8");
         } catch(...) {
             res.status = 404;
             Json::Value err;
             err["error"] = "leer";
             Json::StreamWriterBuilder wbuilder;
-            res.set_content(Json::writeString(wbuilder, err), "application/json");
+            res.set_content(Json::writeString(wbuilder, err), "application/json; charset=utf-8");
         }
     });
 
@@ -56,7 +58,7 @@ void runServer(VokabelDB& db) {
             res.status = 400;
             Json::Value err; err["error"] = "invalid_json";
             res.set_content(Json::writeString(Json::StreamWriterBuilder(), err),
-                            "application/json");
+                            "application/json; charset=utf-8");
             return;
         }
 
@@ -81,7 +83,7 @@ void runServer(VokabelDB& db) {
         // Response OK
         Json::Value ok; ok["ok"] = true;
         res.set_content(Json::writeString(Json::StreamWriterBuilder(), ok),
-                        "application/json");
+                        "application/json; charset=utf-8");
     });
 
     svr.listen("0.0.0.0", 8080);

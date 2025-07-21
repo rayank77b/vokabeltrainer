@@ -15,10 +15,20 @@ async function nextWord(table) {
   let j = await res.json();
   current = { id: j.id, table };
   document.getElementById('frage').innerText = j.frage;
+  document.getElementById('antwort').innerText = j.antwort;
 }
 
 document.getElementById('wusste').onclick = () => sendAnswer(true);
 document.getElementById('oje').onclick    = () => sendAnswer(false);
+
+// ruft die Klasse aus, für einfaches Umschalten
+function restartAnswerAnimation() {
+  const el = document.getElementById('antwort');
+  el.classList.remove('to-black');      // Animation ausschalten
+  // Reflow erzwingen, damit der Browser das Entfernen auch wirklich merkt:
+  void el.offsetWidth;
+  el.classList.add('to-black');         // Animation neu starten
+}
 
 async function sendAnswer(ok) {
   await fetch('/api/answer', {
@@ -31,4 +41,5 @@ async function sendAnswer(ok) {
     })
   });
   nextWord(current.table);
+  restartAnswerAnimation();  //Animation neu triggern
 }
